@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<program>
+
+  <preferences>
+    <engine>
+      <backend db="knex" interface="restExpress" />
+      <frontend style="bootstrap" engine="react" state="react-redux" i18n="react-intl"/>
+    </engine>
+
+  </preferences>
+
+  <data type="table" domain="x" name="y">
+    <fields>
+      <field name="id" type="primary key" />
+      <field name="values" type="enumeration">
+        <value key="1" />
+        <value key="123" />
+      </field>
+      <field name="x" references="x.z.a" />
+    </fields>
+  </data>
+  <data type="view" domain="x" name="yView">
+    <fields>
+      <field name="id" references="x.y.id" />
+    </fields>
+  </data>
+</program>

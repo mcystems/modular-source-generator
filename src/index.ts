@@ -1,7 +1,7 @@
 import {ProjectBuilder} from "engine/ProjectBuilder";
 import {TypescriptExpressRestBackendProject} from "backend/TypescriptExpressRestBackendProject";
 import {Command} from "commander";
-import {GeneratorXmlInterpreter} from "generator/GeneratorXmlInterpreter";
+import {GeneratorXmlInterpreter} from "xmlInterpreter/GeneratorXmlInterpreter";
 
 export class Generator {
 

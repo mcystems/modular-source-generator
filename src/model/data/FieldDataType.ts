@@ -9,10 +9,9 @@ export enum FieldDataType {
   DATETIME = 'datetime',
   ZONE_DATETIME = 'zone_datetime',
   PRIMARY_KEY = 'primary key',
+  UUID_PRIMARY_KEY = 'uuid primary key',
   CURRENCY = 'currency',
   NUMBER = 'number',
   REFERENCE = 'reference',
   ENUMERATION = 'enum',
-  STRING_FULLTEXT = 'string fulltext',
-  LONG_STRING_FULLTEXT = 'long string fulltext'
 }

@@ -1,12 +1,11 @@
 import {CharacterPosition} from "xml2ts/dist/xmlTsNode";
 import {FieldDataType} from "./FieldDataType";
-import {DomainNameElement} from "./DomainNameElement";
-import {Enumeration, EnumerationType} from "./Enumeration";
+import {Enumeration} from "./Enumeration";
+import {DomainNameFieldElement} from "model/DomainNameElement";
 
-export interface Field {
-  name: string;
+export interface Field extends DomainNameFieldElement {
   dataType: FieldDataType;
-  references?: DomainNameElement;
+  references?: DomainNameFieldElement;
   hint?: string;
   required?: boolean;
   unique?: boolean;
@@ -15,6 +14,6 @@ export interface Field {
   maxValue?: number;
   minLength?: number;
   maxLength?: number;
-  fixedValues?: Enumeration<EnumerationType>;
+  fixedValues?: Enumeration;
 }
 
