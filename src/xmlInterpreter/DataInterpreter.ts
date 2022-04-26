@@ -8,12 +8,12 @@ import {ModelCache} from "model/ModelCache";
 import {EnumerationInterpreter} from "xmlInterpreter/EnumerationInterpreter";
 import {DomainNameElement} from "model/DomainNameElement";
 import {forceArray} from "utilities";
-import {Index} from "model/data";
 import _ from "lodash";
 import {Code} from "model/Code";
 import {Api} from "model/api/Api";
 import {Method} from "model/api/Method";
 import {MethodName} from "model/api/MethodName";
+import {Index} from "model/data/Index";
 
 const valueDataTypeMap: Map<string, DataType> = new Map(Object.entries(DataType).map(e => {
   return [e[1], DataType[e[0]]]
