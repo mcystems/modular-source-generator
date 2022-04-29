@@ -1,8 +1,8 @@
-import {Visibility} from "sourceBuilder/generic/Visibility";
-import {ClassLike} from "sourceBuilder/ts/ClassLike";
+import { ClassLike } from "./ClassLike";
+import {Visibility} from "../generic/Visibility";
 
 export class TsInterface extends ClassLike<Array<string>> {
-  constructor(priority: number) {
+  constructor() {
     super('');
   }
 
@@ -11,9 +11,8 @@ export class TsInterface extends ClassLike<Array<string>> {
     return this;
   }
 
-  setVisibility(v: Visibility): this {
-    this.visibility = v;
-    return this;
+  setExport(): this {
+    return this.setVisibility(Visibility.PUBLIC);
   }
 
   addExtends(s: string): this {
@@ -23,7 +22,7 @@ export class TsInterface extends ClassLike<Array<string>> {
 
   renderInherits(): string {
     let rendering = '';
-    if (this.extends.length > 0) {
+    if (this.extends?.length > 0) {
       rendering = ` extends ${this.extends.join()} `
     }
     return rendering;

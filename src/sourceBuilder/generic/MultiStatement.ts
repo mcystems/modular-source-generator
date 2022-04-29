@@ -2,8 +2,8 @@ import {Statement} from "./Statement";
 
 export class MultiStatement extends Statement {
 
-  private statements: Statement[] = [];
   protected joinString: string = '\n';
+  private statements: Statement[] = [];
 
   constructor(st?: string, id?: string) {
     super(st, id);
@@ -14,11 +14,21 @@ export class MultiStatement extends Statement {
   }
 
   render(): string {
-    return this.statements.join(this.joinString);
+    return this.statements.map(s => s.render()).join(this.joinString);
+  }
+
+  prependStatement(st: Statement): this {
+    this.statements.unshift(st);
+    return this;
   }
 
   addStatement(st: Statement): this {
     this.statements.push(st);
+    return this;
+  }
+
+  addStatements(st: Statement[]): this {
+    this.statements.push(...st);
     return this;
   }
 

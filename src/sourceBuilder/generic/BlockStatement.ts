@@ -1,7 +1,7 @@
 import {MultiStatement} from "./MultiStatement";
 import {Statement} from "./Statement";
 import {EmptyStatement} from "./EmptyStatement";
-import {CallStatement} from "sourceBuilder/generic/CallStatement";
+import {CallStatement} from "./CallStatement";
 
 export enum BlockType {
   IF = 'if', ELSEIF = 'else if', ELSE = 'else', DO = 'do', WHILE = 'while', FOR = 'for', TRY = 'try', CATCH = 'catch', FINALLY = 'finally', SWITCH = 'switch',

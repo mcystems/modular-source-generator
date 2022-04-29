@@ -10,6 +10,7 @@ export class TsMember extends Statement {
   protected constant: boolean;
   protected static: boolean;
   protected definition: string;
+  protected optional: boolean = false;
 
   constructor() {
     super('');
@@ -55,6 +56,21 @@ export class TsMember extends Statement {
     return this;
   }
 
+  setOptional(v: boolean): this {
+    this.optional = v;
+    return this;
+  }
+
+  render(): string {
+    const staticKeyword = this.static ? 'static' : '';
+    const constant = this.constant ? 'const' : '';
+    const returnType = this.returnType ? `${this.getTypeMark()} ${this.returnType}` : '';
+    const definition = this.definition ? `= ${this.definition}` : '';
+    this.setStatement(
+      `${this.renderVisibility()} ${staticKeyword} ${constant} ${this.name} ${returnType} ${definition};`);
+    return super.render();
+  }
+
   private renderVisibility(): string {
     if (!this.visibility) {
       return '';
@@ -71,14 +87,7 @@ export class TsMember extends Statement {
     }
   }
 
-  render(): string {
-    const staticKeyword = this.static ? 'static' : '';
-    const constant = this.constant ? 'const' : '';
-    const returnType = this.returnType ? `: ${this.returnType}` : '';
-    const definition = this.definition ? `= ${this.definition}` : '';
-    this.setStatement(
-      `${this.renderVisibility()} ${staticKeyword} ${constant} ${this.name} ${returnType} ${definition};`);
-    return super.render();
+  private getTypeMark(): string {
+    return this.optional ? `?:` : ":";
   }
-
 }

@@ -7,7 +7,6 @@ export enum FieldDataType {
   LONG_STRING = 'long_string',
   DATE = 'date',
   DATETIME = 'datetime',
-  ZONE_DATETIME = 'zone_datetime',
   PRIMARY_KEY = 'primary key',
   UUID_PRIMARY_KEY = 'uuid primary key',
   CURRENCY = 'currency',

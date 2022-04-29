@@ -1,4 +1,4 @@
-import {Renderer} from "sourceBuilder/generic/Renderer";
+import { Renderer } from "./Renderer";
 
 let idCache: Map<string, Statement> = new Map();
 

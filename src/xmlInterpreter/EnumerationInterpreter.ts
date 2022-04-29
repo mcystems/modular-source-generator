@@ -1,8 +1,8 @@
 import {XmlTsNode} from "xml2ts/dist/xmlTsNode";
-import {Enumeration, EnumerationValue} from "model/data/Enumeration";
-import {checkAttrAndWhitespace} from "xmlInterpreter/Interpreter";
-import {forceArray} from "utilities";
-import {DomainNameElement, domainNameOf} from "model/DomainNameElement";
+import {Enumeration, EnumerationValue} from "../model/data/Enumeration";
+import {checkAttrAndWhitespace} from "../xmlInterpreter/Interpreter";
+import {forceArray} from "../utilities";
+import {DomainNameElement, domainNameOf} from "../model/DomainNameElement";
 
 export class EnumerationInterpreter {
   static interpret(node: XmlTsNode): Enumeration {

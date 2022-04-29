@@ -2,12 +2,13 @@ import {Statement} from "../generic/Statement";
 
 export class TsCallStatement extends Statement {
   private params: Statement[] = [];
-  private asyncronous = false;
+  private asynchronous = false;
+
+  protected terminator = ";"
 
   constructor(st: string, id?: string) {
     super(st, id);
   }
-
 
   addParam(param: Statement): this {
     this.params.push(param);
@@ -19,12 +20,12 @@ export class TsCallStatement extends Statement {
   }
 
   setAsync(): this {
-    this.asyncronous = true;
+    this.asynchronous = true;
     return this;
   }
 
   isAsync(): boolean {
-    return this.asyncronous;
+    return this.asynchronous;
   }
 
   getIdentifier() {
@@ -32,6 +33,6 @@ export class TsCallStatement extends Statement {
   }
 
   render(): string {
-    return `${this.asyncronous ? 'await' : ''} ${super.render()}(${this.params.map(param => param.render()).filter(i => i).join(',')});`;
+    return `${this.asynchronous ? 'await' : ''} ${super.render()}(${this.params.map(param => param.render()).filter(i => i).join(',')})${this.terminator}`;
   }
 }

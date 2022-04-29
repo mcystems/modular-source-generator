@@ -3,12 +3,14 @@ import {detect} from "chardet";
 import {Parser} from "xml2ts/dist/parser"
 import {parserDefaults} from "xml2ts/dist/defaults"
 import {XmlTsNode} from "xml2ts/dist/xmlTsNode";
-import {DataInterpreter} from "xmlInterpreter/DataInterpreter";
-import {ModelCache} from "model/ModelCache";
-import {XmlError} from "xmlInterpreter/XmlError";
+import {DataInterpreter} from "../xmlInterpreter/DataInterpreter";
+import {ModelCache} from "../model/ModelCache";
+import {XmlError} from "../xmlInterpreter/XmlError";
 import path from "path";
-import {EnumerationInterpreter} from "xmlInterpreter/EnumerationInterpreter";
-import {domainNameOf} from "model/DomainNameElement";
+import {EnumerationInterpreter} from "../xmlInterpreter/EnumerationInterpreter";
+import {domainNameOf} from "../model/DomainNameElement";
+import {PreferencesInterpreter} from "../xmlInterpreter/PreferencesInterpreter";
+import {ProjectBuilder} from "../generator/ProjectBuilder";
 
 const parserOptions = {
   ...parserDefaults,
@@ -21,22 +23,36 @@ export class GeneratorXmlInterpreter {
   static async interpret(xmlFile: string) {
     const node: XmlTsNode = await new GeneratorXmlInterpreter().parseXml(xmlFile);
     const modelCache = ModelCache.getInstance();
+    const projectBuilder = ProjectBuilder.getInstance();
     for (let i of node.$$ || []) {
       switch (i.name) {
-        case "data":
+        case "data": {
           const data = DataInterpreter.interpret(i);
+          const exists = modelCache.getDataByDomainName(domainNameOf(data));
+          if (exists !== undefined) {
+            throw new XmlError(`data is already defined`, i);
+          }
           modelCache.setDataByDomainName(domainNameOf(data), data);
           data.fields.forEach(f => modelCache.setFieldByDomainDataFieldName(`${domainNameOf(data)}.${f.name}`, f));
+          projectBuilder.fireDataEvent(data);
           break;
+        }
         case "import":
           if (!i?.$?.file) {
             throw new XmlError(`file attribute is missing`, i);
           }
           await GeneratorXmlInterpreter.interpret(path.join(__dirname, i.$.file));
           break;
-        case "enum":
+        case "enum": {
           const e = EnumerationInterpreter.interpret(i);
           modelCache.setEnumerationByName(domainNameOf(e), e);
+
+          projectBuilder.fireEnumerationEvent(e);
+          break;
+        }
+        case "preferences":
+          const pref = PreferencesInterpreter.interpret(i);
+          modelCache.setPreferences(pref);
           break;
         default:
           throw new XmlError(`unknown xml tag`, i);

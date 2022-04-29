@@ -1,19 +1,20 @@
+import {Data, DataType} from "../model/data/Data";
+import {FieldDataType} from "../model/data/FieldDataType";
+import {MethodName} from "../model/api/MethodName";
 import {XmlTsNode} from "xml2ts/dist/xmlTsNode";
-import {Data, DataType} from "model/data/Data";
-import {XmlError} from "xmlInterpreter/XmlError";
-import {Field} from "model/data/Field";
-import {FieldDataType} from "model/data/FieldDataType";
-import {checkAttr, checkAttrAndWhitespace, checkAttrAndWhitespaceBoolean, checkAttrNumeric} from "xmlInterpreter/Interpreter";
-import {ModelCache} from "model/ModelCache";
-import {EnumerationInterpreter} from "xmlInterpreter/EnumerationInterpreter";
-import {DomainNameElement} from "model/DomainNameElement";
-import {forceArray} from "utilities";
+import {checkAttr, checkAttrAndWhitespace, checkAttrAndWhitespaceBoolean, checkAttrNumeric} from "./Interpreter";
+import {XmlError} from "./XmlError";
+import {Field} from "../model/data/Field";
+import {forceArray} from "../utilities";
+import {ModelCache} from "../model/ModelCache";
+import {DomainNameElement} from "../model/DomainNameElement";
+import {Index} from "../model/data";
+import {Code} from "../model/Code";
+import {Api} from "../model/api/Api";
+import {Method} from "../model/api/Method";
+import {EnumerationInterpreter} from "./EnumerationInterpreter";
 import _ from "lodash";
-import {Code} from "model/Code";
-import {Api} from "model/api/Api";
-import {Method} from "model/api/Method";
-import {MethodName} from "model/api/MethodName";
-import {Index} from "model/data/Index";
+
 
 const valueDataTypeMap: Map<string, DataType> = new Map(Object.entries(DataType).map(e => {
   return [e[1], DataType[e[0]]]

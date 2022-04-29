@@ -1,16 +1,18 @@
-import {Data} from "model/data/Data";
-import {Field} from "model/data/Field";
-import {Enumeration} from "model/data/Enumeration";
-import {DomainNameElement, domainNameOf} from "model/DomainNameElement";
+import {Data} from "../model/data/Data";
+import {Field} from "../model/data/Field";
+import {Enumeration} from "../model/data/Enumeration";
+import {DomainNameElement, domainNameOf} from "../model/DomainNameElement";
+import {Preferences} from "../model/application/Preferences";
 
 let instance: ModelCache | undefined;
 
 export class ModelCache {
 
-  readonly dataByDomainName: Map<string, Data> = new Map();
-  readonly fieldByDomainDataFieldName: Map<string, Field> = new Map();
-  readonly enumerationByName: Map<string, Enumeration> = new Map();
-  readonly idFieldOfData: Map<string, string> = new Map();
+  private readonly dataByDomainName: Map<string, Data> = new Map();
+  private readonly fieldByDomainDataFieldName: Map<string, Field> = new Map();
+  private readonly enumerationByName: Map<string, Enumeration> = new Map();
+  private readonly idFieldOfData: Map<string, string> = new Map();
+  private preferences: Preferences;
 
   static getInstance(): ModelCache {
     if (!instance) {
@@ -50,5 +52,15 @@ export class ModelCache {
   getIdFieldNameOfData(d: DomainNameElement): string | undefined {
     return this.idFieldOfData.get(domainNameOf(d));
   }
+
+  setPreferences(pref: Preferences): void {
+    this.preferences = pref;
+  }
+
+  getPreferences(): Preferences {
+    return this.preferences;
+  }
+
+
 }
 

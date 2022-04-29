@@ -2,11 +2,9 @@
 <program>
 
   <preferences>
-    <engine>
-      <backend db="knex" interface="restExpress" />
-      <frontend style="bootstrap" engine="react" state="react-redux" i18n="react-intl"/>
-    </engine>
-
+    <technology controller="restExpress" style="bootstrap" ui="react" state="react-redux" i18n="react-intl">
+      <db engine="knex" type="mysql" />
+    </technology>
   </preferences>
 
   <data type="table" domain="x" name="y">

@@ -1,13 +1,13 @@
-import {Statement} from "sourceBuilder/generic/Statement";
-import {MultiStatement} from "sourceBuilder/generic/MultiStatement";
-import {Visibility} from "sourceBuilder/generic/Visibility";
+import { MultiStatement } from "../generic/MultiStatement";
+import { Statement } from "../generic/Statement";
+import {Visibility} from "../generic/Visibility";
 
 export class ClassLike<EXTEND_TYPE extends Array<string> | string> extends Statement {
   protected readonly members = new MultiStatement();
   protected name: string;
   protected visibility: Visibility;
 
-  protected _extends: EXTEND_TYPE;
+  protected extends: EXTEND_TYPE;
 
   setName(v: string): this {
     this.name = v;
@@ -23,20 +23,20 @@ export class ClassLike<EXTEND_TYPE extends Array<string> | string> extends State
     return this;
   }
 
-  set extends(e: EXTEND_TYPE) {
-    if (Array.isArray(this._extends)) {
+  setExtends(e: EXTEND_TYPE) {
+    if (Array.isArray(this.extends)) {
       if (typeof e === 'string') {
-        this._extends.push(e);
+        this.extends.push(e);
       } else {
         throw new Error(`parameter must be a string`);
       }
     } else {
-      this._extends = e;
+      this.extends = e;
     }
   }
 
-  get extends() {
-    return this._extends;
+  getExtends() {
+    return this.extends;
   }
 
   setMember(member: Statement): this {

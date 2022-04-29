@@ -1,16 +1,9 @@
-import {ProjectBuilder} from "engine/ProjectBuilder";
-import {TypescriptExpressRestBackendProject} from "backend/TypescriptExpressRestBackendProject";
 import {Command} from "commander";
-import {GeneratorXmlInterpreter} from "xmlInterpreter/GeneratorXmlInterpreter";
+import {GeneratorXmlInterpreter} from "./xmlInterpreter/GeneratorXmlInterpreter";
 
 export class Generator {
 
   constructor(readonly xmlFile: string) {
-    this.registerEngines();
-  }
-
-  registerEngines() {
-    ProjectBuilder.getInstance().registerEngine(`typescriptExpressRestBackend`, new TypescriptExpressRestBackendProject());
   }
 
   async generate(): Promise<void> {

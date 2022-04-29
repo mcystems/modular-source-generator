@@ -10,3 +10,6 @@ export interface DomainNameFieldElement extends DomainNameElement {
 export function domainNameOf(e: DomainNameElement): string {
   return `${e.domain}.${e.name}`
 }
+export function domainNameFieldOf(e: DomainNameFieldElement): string {
+  return `${domainNameOf(e)}.${e.fieldName}`;
+}

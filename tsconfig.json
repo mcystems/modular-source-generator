@@ -12,12 +12,10 @@
     "downlevelIteration": true,
     "allowJs": true,
     "checkJs": false,
-    "lib": [ "ES2021" ],
-    "baseUrl": "src"
+    "lib": [ "ES2021" ]
   },
   "exclude": [
     "node_modules"
   ],
-  "include": ["src"],
   "compileOnSave": true
 }

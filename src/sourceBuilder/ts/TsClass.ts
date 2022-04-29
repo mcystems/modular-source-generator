@@ -1,5 +1,6 @@
+import {ClassLike} from "./ClassLike";
 import {Visibility} from "../generic/Visibility";
-import {ClassLike} from "sourceBuilder/ts/ClassLike";
+
 
 export class TsClass extends ClassLike<string> {
   private abstract: boolean;

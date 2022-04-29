@@ -1,8 +1,9 @@
-import {Statement} from "../generic/Statement";
+import {SourceFile} from "../../generator/SourceFile";
+import {Imports} from "../generic/Imports";
 import {MultiStatement} from "../generic/MultiStatement";
-import {Imports} from "sourceBuilder/generic/Imports";
-import {SourceFile} from "engine/SourceFile";
-import {SourceType} from "engine/SourceType";
+import {SourceType} from "../../generator/SourceType";
+import {Statement} from "../generic/Statement";
+
 
 export class TsFile implements SourceFile {
   private readonly imports: Imports = new Imports();
