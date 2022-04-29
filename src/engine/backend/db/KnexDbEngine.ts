@@ -17,7 +17,6 @@ import {TsChainCallStatement} from "../../../sourceBuilder/ts/TsChainCallStateme
 import {FieldDataType} from "../../../model/data/FieldDataType";
 import _ from "lodash";
 import {CompileError} from "../../../CompileError";
-import {State} from "../../../model/application/Support";
 
 let instance: KnexDbEngine | undefined;
 
@@ -57,7 +56,7 @@ export class KnexDbEngine implements Engine<Data> {
       .setExport();
     data.fields.forEach(f => {
       dtoInterface.setMember(new TsMember()
-        .setName(_.lowerFirst(f.name))
+        .setName(_.lowerFirst(f.fieldName))
         .setReturnType(fieldDataToTypescriptType(f.dataType))
         .setOptional(!f.required)
       )
@@ -71,7 +70,7 @@ export class KnexDbEngine implements Engine<Data> {
     if (field.required) {
       st.add('notNullable', []);
     }
-    if (field.unique) {
+    if (field.unique && field.dataType !== FieldDataType.UUID_PRIMARY_KEY && field.dataType !== FieldDataType.PRIMARY_KEY) {
       st.add('unique');
     }
     return st;
@@ -97,20 +96,24 @@ export class KnexDbEngine implements Engine<Data> {
   }
 
   private getFunctionWithCreateSrc(funcName: string, data: Data): TsFunction {
-    const id = `${domainNameOf(data)}.migration.${funcName}`;
+    const funcId = `${domainNameOf(data)}.migration.${funcName}`;
+    const fileId = `${domainNameOf(data)}.migration`;
 
-    let src: TsFunction | undefined = <TsFunction>Statement.findById(id);
+    let src: TsFunction | undefined = <TsFunction>Statement.findById(funcId);
 
     if (!src) {
-      const dStr = new Date().toISOString().replace(/[-T]/, '').replace(/\..+/, '');
-      const srcFile = new TsFile(`${dStr}.ts`, SourceType.BACKEND, "migration")
+      const dStr = new Date().toISOString().replace(/[-T:]/g, '').replace(/\..+/, '');
+      let srcFile: TsFile | undefined = <TsFile>GeneratorContext.getInstance().getSource(fileId);
+      if (!srcFile) {
+        srcFile = new TsFile(`${dStr}.ts`, SourceType.BACKEND, "migration");
+      }
       srcFile.addImport(`{Knex}`, 'knex');
       srcFile.addImport("CreateTableBuilder", "Knex.CreateTableBuilder");
-      src = new TsFunction(funcName, `Promise<void>`, id)
+      src = new TsFunction(funcName, `Promise<void>`, funcId)
         .addParam("knex", "Knex")
         .setAsynchronous().setExport()
       srcFile.addStatement(src);
-      GeneratorContext.getInstance().setSource(`${domainNameOf(data)}.migration`, srcFile);
+      GeneratorContext.getInstance().setSource(fileId, srcFile);
     }
     return src;
   }
@@ -129,7 +132,7 @@ export class KnexDbEngine implements Engine<Data> {
       case FieldDataType.PRIMARY_KEY:
         return new TsChainCallStatement().add('bigIncrements', [fieldName]).add('primary').add('unique');
       case FieldDataType.UUID_PRIMARY_KEY:
-        return new TsChainCallStatement().add(`uuid`, [fieldName]).add('primary').add('primary').add('unique');
+        return new TsChainCallStatement().add(`uuid`, [fieldName]).add('primary').add('unique');
       case FieldDataType.BOOLEAN:
         return new TsChainCallStatement().add(`boolean`, [fieldName]);
       case FieldDataType.DATA:

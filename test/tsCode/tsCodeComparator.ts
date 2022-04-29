@@ -49,7 +49,7 @@ export function expectTsCodeEq(expected: string, got: string): void {
     succeed = v.size === cmp.imports.get(k)?.size && Array.from(v.values()).every(val => cmp.imports.get(k)?.has(val));
   });
   if (!succeed) {
-    expect.fail(src.origImports, cmp.origImports);
+    expect(src.origImports).eq(cmp.origImports);
   }
   expect(src.whitespaceTrimmedSource).eq(cmp.whitespaceTrimmedSource);
 }
