@@ -3,7 +3,7 @@ import {AbstractTsFunction} from "./AbstractTsFunction";
 export class TsFunction extends AbstractTsFunction {
   private exporting: boolean;
 
-  constructor(readonly name: string, readonly returnType: string, id?: string) {
+  constructor(readonly name?: string, readonly returnType?: string, id?: string) {
     super(undefined, id);
   }
 
@@ -15,7 +15,8 @@ export class TsFunction extends AbstractTsFunction {
   render(): string {
     const visibility = this.exporting ? 'export' : '';
     const asynchronous = this.asynchronous ? 'async' : '';
-    return `${visibility} ${asynchronous} function ${this.name}(${this.params.map(p => `${p.name}: ${p.type}`).join()}): ${this.returnType} {
+    const returns = this.returnType ? `: ${this.returnType}` : '';
+    return `${visibility} ${asynchronous} function ${this.name || ''}(${this.params.map(p => `${p.name}: ${p.type}`).join()})${returns} {
       ${super.render()}
     }`;
   }

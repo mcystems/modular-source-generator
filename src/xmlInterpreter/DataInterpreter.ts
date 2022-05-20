@@ -8,12 +8,12 @@ import {Field} from "../model/data/Field";
 import {forceArray} from "../utilities";
 import {ModelCache} from "../model/ModelCache";
 import {DomainNameElement} from "../model/DomainNameElement";
-import {Index} from "../model/data";
 import {Code} from "../model/Code";
 import {Api} from "../model/api/Api";
 import {Method} from "../model/api/Method";
 import {EnumerationInterpreter} from "./EnumerationInterpreter";
 import _ from "lodash";
+import {Index} from "../model/data/Index";
 
 
 const valueDataTypeMap: Map<string, DataType> = new Map(Object.entries(DataType).map(e => {
@@ -104,7 +104,7 @@ export class DataInterpreter {
       }
 
       if (field?.$?.references) {
-        const data = ModelCache.getInstance().getDataByDomainName(field.$.references);
+        const data = ModelCache.getInstance().getDataByDomainAndName(field.$.references);
         if (!data) {
           throw new XmlError(`referenced table can not be found`, field);
         }

@@ -1,8 +1,9 @@
 import {MultiStatement} from "../generic/MultiStatement";
 import {TsCallStatement} from "./TsCallStatement";
 import {Statement} from "../generic/Statement";
+import {forceArray} from "../../utilities";
 
-class ChainableCallStatement extends TsCallStatement {
+export class TsChainableCallStatement extends TsCallStatement {
   protected terminator: string = "";
 
   constructor(st: string) {
@@ -12,11 +13,11 @@ class ChainableCallStatement extends TsCallStatement {
 
 
 export class TsChainCallStatement extends MultiStatement {
-  protected joinString = ".";
   private asynchronous: boolean = false;
 
   constructor(id?: string) {
     super(undefined, id);
+    this.setJoinString(".");
   }
 
   setAsync(): this {
@@ -28,16 +29,16 @@ export class TsChainCallStatement extends MultiStatement {
     return this.asynchronous;
   }
 
-  add(name: string, params?: string[]): this {
-    const st = new ChainableCallStatement(name);
-    params?.forEach(p => st.addParam(new Statement(p)));
+  add(name: string, params?: string[] | string | Statement[] | Statement): this {
+    const st = new TsChainableCallStatement(name);
+    forceArray(params).forEach(p => st.addParam(p instanceof Statement ? p : new Statement(p)));
 
     this.addStatement(st);
     return this;
   }
 
   render(): string {
-    const rendering = super.render()
+    const rendering = super.render();
     return `${this.asynchronous ? 'await' : ''} ${rendering};`;
   }
 }

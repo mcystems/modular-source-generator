@@ -2,7 +2,7 @@ import {Statement} from "./Statement";
 
 export class MultiStatement extends Statement {
 
-  protected joinString: string = '\n';
+  private joinString: string = '\n';
   private statements: Statement[] = [];
 
   constructor(st?: string, id?: string) {
@@ -67,5 +67,10 @@ export class MultiStatement extends Statement {
     for (let st of this.statements) {
       yield st;
     }
+  }
+
+  setJoinString(st: string): this {
+    this.joinString = st;
+    return this;
   }
 }

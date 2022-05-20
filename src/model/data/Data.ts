@@ -1,9 +1,9 @@
 import {CharacterPosition} from "xml2ts/dist/xmlTsNode";
-import {Api} from "../../model/api/Api";
-import {Code} from "../../model/Code";
-import {Index} from "../../model/data/Index";
-import {Field} from "../../model/data/Field";
-import {DomainNameElement} from "../../model/DomainNameElement";
+import {Api} from "../api/Api";
+import {Code} from "../Code";
+import {Index} from "./Index";
+import {Field} from "./Field";
+import {DomainNameElement} from "../DomainNameElement";
 
 export enum DataType {
   TABLE = 'table', VIEW = 'view'

@@ -28,7 +28,7 @@ export class GeneratorXmlInterpreter {
       switch (i.name) {
         case "data": {
           const data = DataInterpreter.interpret(i);
-          const exists = modelCache.getDataByDomainName(domainNameOf(data));
+          const exists = modelCache.getDataByDomainAndName(domainNameOf(data));
           if (exists !== undefined) {
             throw new XmlError(`data is already defined`, i);
           }

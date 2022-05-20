@@ -2,7 +2,7 @@ import {Engine} from "../engine/Engine";
 import {Data} from "../model/data/Data";
 import {ModelCache} from "../model/ModelCache";
 import {DbEngine} from "../model/application/Support";
-import {KnexDbEngine} from "../engine/backend/db/KnexDbEngine";
+import {KnexDbEngine} from "./backend/db/knex/KnexDbEngine";
 
 
 export class DbEngineFactory {

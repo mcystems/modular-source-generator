@@ -3,23 +3,145 @@
 
   <preferences>
     <technology controller="restExpress" style="bootstrap" ui="react" state="react-redux" i18n="react-intl">
-      <db engine="knex" type="mysql" />
+      <db engine="knex" type="mysql"/>
     </technology>
   </preferences>
 
   <data type="table" domain="x" name="y">
     <fields>
-      <field name="id" type="primary key" />
+      <field name="id" type="primary key"/>
       <field name="values" type="enumeration">
-        <value key="1" />
-        <value key="123" />
+        <value key="1"/>
+        <value key="123"/>
       </field>
-      <field name="x" references="x.z.a" />
+      <field name="x" references="x.z.a"/>
     </fields>
   </data>
-  <data type="view" domain="x" name="yView">
+
+  <data domain="partner" name="partner">
     <fields>
-      <field name="id" references="x.y.id" />
+      <field name="id" type="primary key"/>
+      <field name="name" type="string"/>
     </fields>
+  </data>
+
+  <data domain="inventory" name="inventory">
+    <fields>
+      <field name="id" type="primary key"/>
+      <field name="name" type="string" required="true"/>
+    </fields>
+  </data>
+
+  <data domain="dictionary" name="unit">
+    <fields>
+      <field name="name" type="string" required="true"/>
+    </fields>
+  </data>
+
+  <data domain="inventory" name="article">
+    <fields>
+      <field name="id" type="primary key" />
+      <field name="name" type="string" required="true"/>
+      <field name="number" type="string" required="true"/>
+      <field name="ean" type="string"/>
+      <field name="isService" type="boolean"/>
+      <field name="minimalUnit" type="number"/>
+      <field name="remark" type="text"/>
+      <field name="group" type="string"/>
+      <field name="defaultInventory" references="inventory.inventory.id" />
+    </fields>
+  </data>
+
+  <data domain="inventory" name="articleUnit">
+    <fields>
+      <field name="id" type="primary key" />
+      <field name="priority" type="number"/>
+      <field name="article" references="inventory.article.id" />
+      <field name="unit" references="dictionary.unit.id" />
+    </fields>
+  </data>
+
+  <data domain="inventory" name="storage">
+    <fields>
+      <field name="id" type="primary key" />
+      <field name="amount" type="number" required="true"/>
+      <field name="creationDate" type="datetime" required="true"/>
+      <field name="article" references="inventory.article.id" />
+      <field name="inventory" references="inventory.inventory.id" />
+    </fields>
+  </data>
+
+  <data domain="inventory" name="inventory">
+    <fields>
+      <field name="id" type="primary key"/>
+      <field name="unitAmount" type="number" minValue="0" required="true"/>
+    </fields>
+  </data>
+
+  <data domain="inventory" name="inward">
+    <fields>
+      <field name="id" type="primary key"/>
+      <field name="type" type="enumeration" required="true">
+        <value key="general"/>
+        <value key="coop"/>
+        <value key="consignation"/>
+      </field>
+      <field name="creationDate" type="date"/>
+      <field name="exchangeRate" type="number"/>
+      <field name="archived" type="boolean"/>
+      <field name="inventory" references="inventory.inventory.id"/>
+      <field name="partner" references="partner.partner.id" required="true"/>
+    </fields>
+  </data>
+  <data domain="inventory" name="inwardView" type="view">
+    <joins>
+      <join>inventory.inward(inw).inventory+(inv)</join>
+      <join>inw.partner+-(p)</join>
+    </joins>
+    <fields>
+      <field name="id" references="inw.id"/>
+      <field name="type" references="inw.type"/>
+      <field name="creationDate" references="inw.creationDate"/>
+      <field name="archived" references="inw.archived"/>
+      <field name="inventoryName" references="inv.name"/>
+    </fields>
+  </data>
+
+  <data domain="inventory" name="ivnentoryValue" type="view">
+    <sql>
+      select
+        inv.name as inventory_name,
+        art.number as article_number,
+        art.name as article_name,
+        art.size as article_size,
+        s.amount as amount,
+        u.name as unit_name
+      from inventory.storage s
+      join inventory.inventory inv on s.inventory = inv.id
+      join inventory.article art on s.article = art.id
+      join inventory.articleUnit au on art.id = au.article
+      join unit u on au.unit = u.id
+      where s.id in (
+        select max(s.id)
+        from inventory.article a
+        left join inventory.storage s on a.id = s.article
+        join inventory.inventory i on s.inventory = i.id
+        group by a.id, i.id
+      );
+    </sql>
+<!--    <joins>-->
+<!--      <join>inventory.storage(s).inventory+(inv)</join>-->
+<!--      <join>s.article+(art)</join>-->
+<!--      <join>inventory.articleUnit(au).unit+(u)</join>-->
+<!--    </joins>-->
+<!--    <fields>-->
+<!--      <field name="inventoryName" references="inv.name" />-->
+<!--      <field name="articleNumber" references="art.number" />-->
+<!--      <field name="articleName" references="art.name" />-->
+<!--      <field name="unitName" references="u.name" />-->
+<!--    </fields>-->
+<!--    <where>-->
+<!--      -->
+<!--    </where>-->
   </data>
 </program>

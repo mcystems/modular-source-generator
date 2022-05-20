@@ -1,22 +1,23 @@
-import {Engine} from "../../Engine";
-import {Data, DataType} from "../../../model/data/Data";
-import {GeneratorContext} from "../../../generator/GeneratorContext";
-import {SourceType} from "../../../generator/SourceType";
-import {TsFile} from "../../../sourceBuilder/ts/TsFile";
-import {domainNameOf} from "../../../model/DomainNameElement";
-import {TsInterface} from "../../../sourceBuilder/ts/TsInterface";
-import {TsMember} from "../../../sourceBuilder/ts/TsMember";
-import {fieldDataToTypescriptType} from "../../../sourceBuilder/ts/FieldDataToTypescriptType";
-import {Field} from "../../../model/data/Field";
-import {Statement} from "../../../sourceBuilder/generic/Statement";
-import {TsCallStatement} from "../../../sourceBuilder/ts/TsCallStatement";
-import {TsArrowFunction} from "../../../sourceBuilder/ts/TsArrowFunction";
-import {MultiStatement} from "../../../sourceBuilder/generic/MultiStatement";
-import {TsFunction} from "../../../sourceBuilder/ts/TsFunction";
-import {TsChainCallStatement} from "../../../sourceBuilder/ts/TsChainCallStatement";
-import {FieldDataType} from "../../../model/data/FieldDataType";
+import {Engine} from "../../../Engine";
+import {Data, DataType} from "../../../../model/data/Data";
+import {GeneratorContext} from "../../../../generator/GeneratorContext";
+import {SourceType} from "../../../../generator/SourceType";
+import {TsFile} from "../../../../sourceBuilder/ts/TsFile";
+import {domainNameFieldOf, domainNameOf} from "../../../../model/DomainNameElement";
+import {TsInterface} from "../../../../sourceBuilder/ts/TsInterface";
+import {TsMember} from "../../../../sourceBuilder/ts/TsMember";
+import {fieldDataToTypescriptType} from "../../../../sourceBuilder/ts/FieldDataToTypescriptType";
+import {Field} from "../../../../model/data/Field";
+import {Statement} from "../../../../sourceBuilder/generic/Statement";
+import {TsCallStatement} from "../../../../sourceBuilder/ts/TsCallStatement";
+import {TsArrowFunction} from "../../../../sourceBuilder/ts/TsArrowFunction";
+import {MultiStatement} from "../../../../sourceBuilder/generic/MultiStatement";
+import {TsFunction} from "../../../../sourceBuilder/ts/TsFunction";
+import {TsChainCallStatement} from "../../../../sourceBuilder/ts/TsChainCallStatement";
+import {FieldDataType} from "../../../../model/data/FieldDataType";
 import _ from "lodash";
-import {CompileError} from "../../../CompileError";
+import {CompileError} from "../../../../CompileError";
+import {ModelCache} from "../../../../model/ModelCache";
 
 let instance: KnexDbEngine | undefined;
 
@@ -76,20 +77,49 @@ export class KnexDbEngine implements Engine<Data> {
     return st;
   }
 
-  private setupMigration(data): void {
+  private createView(upFunc: TsFunction, data: Data): void {
+
+    const idField = data.fields.find(f => f.dataType === FieldDataType.PRIMARY_KEY || f.dataType === FieldDataType.UUID_PRIMARY_KEY);
+    if (!idField) {
+      throw new CompileError('no id field for view', data.pos);
+    }
+    if (idField.dataType === FieldDataType.UUID_PRIMARY_KEY) {
+      throw new CompileError(`uuid primary key is not available for views with knex ab engine`, idField.pos);
+    }
+    if(!idField.references) {
+      throw new CompileError(`view id field must referencing to something`, idField.pos);
+    }
+    const refField = ModelCache.getInstance().getFieldByDomainDataFieldName(domainNameFieldOf(idField.references));
+    if(!refField) {
+      throw new CompileError(`referenced field is not defined or not yet parsed`, idField.pos);
+    }
+
+
+
+  }
+
+  private setupMigration(data: Data): void {
     const upFunc = this.getDDLUpFunctionAndSetDDLFileWhenNeeded(data);
 
-    if (data.type === DataType.TABLE) {
-      const st: Statement[] = data.fields.map(f => this.mapFieldTypeToFieldCreateStatement(f, 't'));
-
-      upFunc.addStatement(
-        new TsCallStatement(`knex.schema.createTable`)
-          .addParam(new Statement(`"${data.name}"`))
-          .addParam(new TsArrowFunction()
-            .addParam('t', 'CreateTableBuilder')
-            .addStatement(new MultiStatement().addStatements(st))
-          )
-      );
+    switch (data.type) {
+      case DataType.TABLE: {
+        const st: Statement[] = data.fields.map(f => this.mapFieldTypeToFieldCreateStatement(f, 't'));
+        upFunc.addStatement(
+          new TsCallStatement(`knex.schema.createTable`)
+            .addParam(new Statement(`"${data.name}"`))
+            .addParam(new TsArrowFunction()
+              .addParam('t', 'Knex.CreateTableBuilder')
+              .addStatement(new MultiStatement().addStatements(st))
+            )
+        );
+        break;
+      }
+      case DataType.VIEW: {
+        this.createView(upFunc, data);
+        break;
+      }
+      default:
+        throw new CompileError(`invalid data type`, data.pos);
     }
     const downFunc = this.getDDLDownFunctionAndSetDDLFileWhenNeeded(data);
     downFunc.addStatement(new TsCallStatement(`knex.schema.dropTable`).addParam(new Statement(`"${data.name}"`)).setAsync());
@@ -108,7 +138,6 @@ export class KnexDbEngine implements Engine<Data> {
         srcFile = new TsFile(`${dStr}.ts`, SourceType.BACKEND, "migration");
       }
       srcFile.addImport(`{Knex}`, 'knex');
-      srcFile.addImport("CreateTableBuilder", "Knex.CreateTableBuilder");
       src = new TsFunction(funcName, `Promise<void>`, funcId)
         .addParam("knex", "Knex")
         .setAsynchronous().setExport()

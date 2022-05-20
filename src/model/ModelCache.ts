@@ -25,7 +25,7 @@ export class ModelCache {
     this.dataByDomainName.set(domainName, data);
   }
 
-  getDataByDomainName(s: string): Data | undefined {
+  getDataByDomainAndName(s: string): Data | undefined {
     return this.dataByDomainName.get(s);
   }
 

@@ -32,7 +32,12 @@ export class TsCallStatement extends Statement {
     return super.render();
   }
 
+  setTerminator(t: string): this {
+    this.terminator= t;
+    return this;
+  }
+
   render(): string {
-    return `${this.asynchronous ? 'await' : ''} ${super.render()}(${this.params.map(param => param.render()).filter(i => i).join(',')})${this.terminator}`;
+    return `${this.asynchronous ? 'await ' : ''}${super.render()}(${this.params.map(param => param.render()).filter(i => i).join(',')})${this.terminator}`;
   }
 }
